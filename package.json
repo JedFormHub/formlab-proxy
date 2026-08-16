@@ -1,10 +1,10 @@
 {
   "name": "formlab-proxy",
-  "version": "1.0.0",
-  "description": "CORS proxy for Form Lab dashboard",
-  "main": "proxy.js",
+  "version": "2.0.0",
+  "description": "Form Lab — CORS proxy + race scanner + results settler",
+  "main": "server.js",
   "scripts": {
-    "start": "node proxy.js"
+    "start": "node server.js"
   },
   "engines": {
     "node": ">=18.0.0"
