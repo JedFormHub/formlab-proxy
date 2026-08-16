@@ -30,23 +30,32 @@ function isMetro(venueName) {
 }
 
 // ─── AEST helpers ────────────────────────────────────────────────────────────
+// AEST offset: UTC+10 standard, UTC+11 daylight saving
+// Use fixed offset arithmetic — works on all Node.js environments
 function aestNow() {
-  return new Date(new Date().toLocaleString('en-AU', { timeZone: 'Australia/Sydney' }));
+  const now = new Date();
+  const aestOffset = 10 * 60; // AEST UTC+10 in minutes (conservative — no DST)
+  return new Date(now.getTime() + aestOffset * 60 * 1000);
 }
 
 function aestDateStr(d) {
-  return (d || aestNow()).toLocaleDateString('en-AU', { timeZone: 'Australia/Sydney' });
+  const dt = d || aestNow();
+  const day   = String(dt.getUTCDate()).padStart(2, '0');
+  const month = String(dt.getUTCMonth() + 1).padStart(2, '0');
+  const year  = dt.getUTCFullYear();
+  return `${day}/${month}/${year}`;
 }
 
 function aestDayName(d) {
-  return (d || aestNow()).toLocaleDateString('en-AU', { timeZone: 'Australia/Sydney', weekday: 'long' });
+  const days = ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
+  return days[(d || aestNow()).getUTCDay()];
 }
 
 function isoDate(d) {
   const dt = d || aestNow();
-  const y  = dt.getFullYear();
-  const m  = String(dt.getMonth() + 1).padStart(2, '0');
-  const dy = String(dt.getDate()).padStart(2, '0');
+  const y  = dt.getUTCFullYear();
+  const m  = String(dt.getUTCMonth() + 1).padStart(2, '0');
+  const dy = String(dt.getUTCDate()).padStart(2, '0');
   return `${y}-${m}-${dy}`;
 }
 
@@ -654,7 +663,7 @@ const server = http.createServer(async (req, res) => {
     res.writeHead(200, { 'Content-Type': 'application/json' });
     res.end(JSON.stringify({
       status:        'Form Lab proxy running',
-      time:          aestNow().toISOString(),
+      time:          new Date().toISOString(),
       lastScanDate,
       lastSettleDate,
       betsLogged:    bets
